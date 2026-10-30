@@ -1,8 +1,12 @@
 import RecipeCard from "../components/RecipeCard";
 import Tag from "../UI/Tag";
 import { Btn } from "../UI/Btn";
+import { useContext } from "react";
+import { recipeContext } from "../context/RecipeContext";
 
 const Dishes = () => {
+  const { data } = useContext(recipeContext)
+
   return (
     <div className="relative z-10 mx-auto w-full max-w-350 px-4 py-8 sm:px-8 sm:py-12">
       {/* Editorial Header Section */}
@@ -34,8 +38,27 @@ const Dishes = () => {
         </div>
       </div>
 
-      {/* Recipe Cards Grid */}
-      <RecipeCard  />
+      {/* Recipe Cards Grid / Empty State */}
+      {data && data.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data.map((recipeData) => (
+            <RecipeCard key={recipeData.id} recipe={recipeData} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-16 text-center rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+          <h1 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-tight text-white">
+            No Dishes Available
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm text-cream/60 max-w-md">
+            No recipes are currently present in the collection. Add your first heirloom dish to get started.
+          </p>
+          <div className="mt-6">
+            <Btn title="Add Recipe Dish" theme={2} to="/add-recipe-dish" />
+          </div>
+        </div>
+      )}
+     
     </div>
   );
 };
