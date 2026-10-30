@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { recipeContext } from "../context/RecipeContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -14,18 +14,20 @@ import {
   ChevronUp,
   ChevronDown,
   Bookmark,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import Tag from "../UI/Tag";
 
 const RecipeDetails = () => {
+  const naigate = useNavigate();
   const { id } = useParams();
-  const { data } = useContext(recipeContext);
+  const { data, setData } = useContext(recipeContext);
 
   // Filter recipe by ID from context
   const recipe = data?.find((item) => String(item.id) === String(id));
 
   // Interactive UI states mirroring the reference image
-  const [selectedServings, setSelectedServings] = useState("4");
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [swiperInstance, setSwiperInstance] = useState(null);
@@ -85,6 +87,18 @@ const RecipeDetails = () => {
     "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=600&q=80",
   ];
 
+  const deleteHandler = () => {
+    const remainderData = data?.filter(
+      (item) => String(item.id) !== String(id),
+    );
+
+    naigate("/all-dishs");
+    setData(remainderData);
+  };
+
+  const updateHandler = (id) => {
+    naigate(`/recipes/details/update/${id}`);
+  };
   return (
     <div className="relative z-10 mx-auto w-full max-w-350 px-4 py-6 sm:px-8 sm:py-10">
       {/* 1. Breadcrumb & Back Navigation (Matching top left of reference) */}
@@ -186,11 +200,33 @@ const RecipeDetails = () => {
         <div className="lg:col-span-6 flex flex-col gap-6">
           {/* Header & Title */}
           <div>
-            <div className="mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <Tag title={cuisine || "Authentic Dish"} />
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateHandler(id)}
+                  title="Update Recipe"
+                  aria-label="Update Recipe"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.05] text-cream/75 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#e2ab35] hover:bg-[#e2ab35] hover:text-[#0f2a1b] hover:shadow-[0_0_16px_rgba(226,171,53,0.35)] cursor-pointer"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={deleteHandler}
+                  title="Delete Recipe"
+                  aria-label="Delete Recipe"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.05] text-cream/75 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-rose-500 hover:bg-rose-500 hover:text-white hover:shadow-[0_0_16px_rgba(244,63,94,0.35)] cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
-            <h1 className="font-display text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-tight">
+            <h1 className="font-display 2xl:text-[2.4vw] lg:text-[3vw] font-black uppercase tracking-tight text-white leading-tight">
               {recipeName}
             </h1>
 
@@ -218,38 +254,12 @@ const RecipeDetails = () => {
             </p>
           </div>
 
-          {/* Servings Selector (Matching "Select Size" S, M, L, XL in reference) */}
-          <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-sage mb-2.5">
-              Select Servings
-            </span>
-            <div className="flex items-center gap-2.5">
-              {["2", "4", "6", "8"].map((serv) => {
-                const isSelected = selectedServings === serv;
-                return (
-                  <button
-                    key={serv}
-                    type="button"
-                    onClick={() => setSelectedServings(serv)}
-                    className={`flex h-11 w-14 items-center justify-center rounded-2xl border text-xs font-bold transition-all duration-300 cursor-pointer ${
-                      isSelected
-                        ? "border-[#e2ab35] bg-[#0f2a1b] text-[#e2ab35] shadow-[0_0_15px_rgba(226,171,53,0.3)] ring-1 ring-[#e2ab35]"
-                        : "border-white/15 bg-white/[0.04] text-cream/70 hover:bg-white/[0.08]"
-                    }`}
-                  >
-                    {serv}P
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Action Row: Primary Button + Heart (Matching "Add to Cart" + Heart in reference) */}
+          {/* Action Row: Primary Button + Heart */}
           <div className="flex items-center gap-3 pt-2">
             <button
               type="button"
               onClick={() => setIsSaved(!isSaved)}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-2xl py-3.5 px-6 font-display text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+              className={`w-[70%] flex items-center justify-center gap-2 rounded-full py-3 px-6 font-display text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                 isSaved
                   ? "bg-emerald-600 text-white shadow-[0_0_25px_rgba(16,185,129,0.4)]"
                   : "bg-[#f7f4ea] text-[#0f2a1b] hover:bg-[#e2ab35] hover:shadow-[0_0_25px_rgba(226,171,53,0.35)]"
@@ -266,7 +276,7 @@ const RecipeDetails = () => {
             <button
               type="button"
               onClick={() => setIsLiked(!isLiked)}
-              className={`flex h-12 w-12 items-center justify-center rounded-2xl border backdrop-blur-md transition-all duration-300 cursor-pointer ${
+              className={`flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-300 cursor-pointer ${
                 isLiked
                   ? "border-rose-500/60 bg-rose-500/20 text-rose-400"
                   : "border-white/15 bg-white/[0.04] text-cream/70 hover:bg-white/10 hover:text-white"
@@ -415,6 +425,30 @@ const RecipeDetails = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Action Row: Update & Delete Recipe Buttons (Styled matching site's pill buttons) */}
+            <div className="flex items-center gap-10 pt-1 hidden">
+              <button
+                type="button"
+                className="group  flex items-center justify-center gap-3 rounded-full bg-[#f7f4ea] text-[#0f2a1b] hover:bg-[#e2ab35] py-2 px-3 font-display text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-[0_0_25px_rgba(226,171,53,0.35)] transition-all duration-300 cursor-pointer"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0f2a1b] text-[#f7f4ea] group-hover:bg-[#0f2a1b] transition-colors shrink-0">
+                  <Pencil className="h-3.5 w-3.5" />
+                </span>
+                <span>Update the recipe</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={deleteHandler}
+                className="group  flex items-center justify-center gap-3 rounded-full border border-rose-500/30 bg-rose-500/15 text-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-600 py-2 px-3  font-display text-xs sm:text-sm font-bold uppercase tracking-wider backdrop-blur-md shadow-md hover:shadow-[0_0_25px_rgba(225,29,72,0.35)] transition-all duration-300 cursor-pointer"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-rose-500/25 text-rose-200 group-hover:bg-white group-hover:text-rose-600 transition-colors shrink-0">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </span>
+                <span>Delete the recipe</span>
+              </button>
             </div>
           </div>
         </div>
