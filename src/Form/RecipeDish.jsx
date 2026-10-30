@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import {
@@ -17,6 +17,7 @@ import {
 import { Btn } from "../UI/Btn";
 import Tag from "../UI/Tag";
 import { nanoid } from "nanoid";
+import { recipeContext } from "../context/RecipeContext";
 
 const CUISINES = [
   "Bengali Heirloom",
@@ -30,6 +31,7 @@ const CUISINES = [
 ];
 
 const RecipeDish = () => {
+  const { data, setData } = useContext(recipeContext);
   const [submittedData, setSubmittedData] = useState(null);
 
   const {
@@ -50,10 +52,13 @@ const RecipeDish = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    data.id = nanoid();
-    console.log("Recipe Dish Submitted:", data);
-    setSubmittedData(data);
+  const onSubmit = (recipeData) => {
+    recipeData.id = nanoid();
+
+    setData([...data, recipeData]);
+
+    console.log("Recipe Dish Submitted:", recipeData);
+    setSubmittedData(recipeData);
     reset();
   };
 
