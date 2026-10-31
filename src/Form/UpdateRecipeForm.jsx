@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router";
+import toast from "react-hot-toast";
 import {
   UtensilsCrossed,
   AlertCircle,
@@ -69,6 +70,8 @@ const UpdateRecipeForm = () => {
     );
 
     setData(updatedData);
+    console.log("Recipe Dish Updated:", formData);
+    toast.success(`"${formData.recipeName}" updated successfully!`);
 
     // Redirect back to recipe details page
     navigate(`/recipes/details/${id}`);

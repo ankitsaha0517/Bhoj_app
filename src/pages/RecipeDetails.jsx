@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
 import { recipeContext } from "../context/RecipeContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -88,12 +89,14 @@ const RecipeDetails = () => {
   ];
 
   const deleteHandler = () => {
+    const dishName = recipe?.recipeName || "Recipe";
     const remainderData = data?.filter(
       (item) => String(item.id) !== String(id),
     );
 
-    naigate("/all-dishs");
     setData(remainderData);
+    toast.success(`"${dishName}" deleted successfully!`);
+    naigate("/all-dishs");
   };
 
   const updateHandler = (id) => {

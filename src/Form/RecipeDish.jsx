@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
 import {
   UtensilsCrossed,
   AlertCircle,
@@ -57,8 +58,9 @@ const RecipeDish = () => {
 
     setData([...data, recipeData]);
     console.log("Recipe Dish Submitted:", recipeData);
+    toast.success(`"${recipeData.recipeName}" published successfully!`);
 
-    // Redirect directly to home page
+    // Redirect directly to all dishes
     navigate("/all-dishs");
   };
 

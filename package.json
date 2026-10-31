@@ -17,6 +17,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-hook-form": "^7.91.0",
+    "react-hot-toast": "^2.6.1",
     "react-router": "^7.18.4",
     "swiper": "^14.3.0",
     "tailwindcss": "^4.3.3"
